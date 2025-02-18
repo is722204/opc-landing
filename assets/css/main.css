@@ -143,10 +143,10 @@ h6 {
 # Global Header
 --------------------------------------------------------------*/
 .header {
-  --background-color: #3d4d6a;
+  --background-color: #003d7de0;
   --heading-color: #ffffff;
   color: var(--default-color);
-  background-color: var(--background-color);
+  background-color: #003d7de0;
   padding: 15px 0;
   transition: all 0.5s;
   z-index: 997;
@@ -853,6 +853,9 @@ section,
   padding: 120px 0 60px 0;
   display: flex;
   align-items: center;
+  background-image: url(https://www.randstadenterprise.com/s3fs-media/ent/public/2024-02/material_header_outplacement_1500x600.jpg);
+  background-position: center;
+  background-size: cover;
 }
 
 .hero h1 {
