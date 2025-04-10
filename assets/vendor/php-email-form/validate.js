@@ -1,85 +1,51 @@
-/**
-* PHP Email Form Validation - v3.10
-* URL: https://bootstrapmade.com/php-email-form/
-* Author: BootstrapMade.com
-*/
 (function () {
   "use strict";
 
   let forms = document.querySelectorAll('.php-email-form');
 
-  forms.forEach( function(e) {
+  forms.forEach(function(e) {
     e.addEventListener('submit', function(event) {
       event.preventDefault();
 
       let thisForm = this;
 
-      let action = thisForm.getAttribute('action');
-      let recaptcha = thisForm.getAttribute('data-recaptcha-site-key');
-      
-      if( ! action ) {
-        displayError(thisForm, 'The form action property is not set!');
-        return;
-      }
+      // Obtener los valores del formulario
+      const name = thisForm.querySelector('[name="name"]').value;
+      const email = thisForm.querySelector('[name="email"]').value;
+      const empresa = thisForm.querySelector('[name="empresa"]').value;
+      const service = thisForm.querySelector('[name="service"]').value;
+      const subject = thisForm.querySelector('[name="subject"]').value;
+      const message = thisForm.querySelector('[name="message"]').value;
+
+      // Construir el cuerpo del correo
+      const body = `
+Nombre: ${name}%0D%0A
+Email: ${email}%0D%0A
+Empresa: ${empresa}%0D%0A
+Servicio: ${service}%0D%0A
+Mensaje: ${message}
+`;
+
+      // Crear el enlace mailto
+      const mailtoLink = `mailto:correo@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+
+      // Mostrar el loader y simular envío
       thisForm.querySelector('.loading').classList.add('d-block');
       thisForm.querySelector('.error-message').classList.remove('d-block');
       thisForm.querySelector('.sent-message').classList.remove('d-block');
 
-      let formData = new FormData( thisForm );
+      // Simular un breve "envío" y abrir el mail
+      setTimeout(() => {
+        thisForm.querySelector('.loading').classList.remove('d-block');
+        thisForm.querySelector('.sent-message').classList.add('d-block');
 
-      if ( recaptcha ) {
-        if(typeof grecaptcha !== "undefined" ) {
-          grecaptcha.ready(function() {
-            try {
-              grecaptcha.execute(recaptcha, {action: 'php_email_form_submit'})
-              .then(token => {
-                formData.set('recaptcha-response', token);
-                php_email_form_submit(thisForm, action, formData);
-              })
-            } catch(error) {
-              displayError(thisForm, error);
-            }
-          });
-        } else {
-          displayError(thisForm, 'The reCaptcha javascript API url is not loaded!')
-        }
-      } else {
-        php_email_form_submit(thisForm, action, formData);
-      }
+        // Abrir cliente de correo
+        window.location.href = mailtoLink;
+
+        // Resetear el formulario
+        thisForm.reset();
+      }, 1000); // 1 segundo de "carga"
     });
   });
-
-  function php_email_form_submit(thisForm, action, formData) {
-    fetch(action, {
-      method: 'POST',
-      body: formData,
-      headers: {'X-Requested-With': 'XMLHttpRequest'}
-    })
-    .then(response => {
-      if( response.ok ) {
-        return response.text();
-      } else {
-        throw new Error(`${response.status} ${response.statusText} ${response.url}`); 
-      }
-    })
-    .then(data => {
-      thisForm.querySelector('.loading').classList.remove('d-block');
-      if (data.trim() == 'OK') {
-        thisForm.querySelector('.sent-message').classList.add('d-block');
-        thisForm.reset(); 
-      } else {
-        throw new Error(data ? data : 'Form submission failed and no error message returned from: ' + action); 
-      }
-    })
-    .catch((error) => {
-      displayError(thisForm, error);
-    });
-  }
-
-  function displayError(thisForm, error) {
-    thisForm.querySelector('.loading').classList.remove('d-block');
-    thisForm.querySelector('.error-message').innerHTML = error;
-    thisForm.querySelector('.error-message').classList.add('d-block');
-  }
 
 })();
